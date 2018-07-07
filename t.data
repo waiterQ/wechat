@@ -1,0 +1,28 @@
+window.redirect_uri="
+https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?
+ticket=A20U9pV5UoEhmUwc7jY4gQYw@qrticket_0
+&uuid=Icbm-Nl4CA==
+&lang=zh_CN
+&scan=1530856644";
+
+<error>
+<ret>0</ret>
+<message></message>
+<skey>@crypt_678e597e_9e6b5c37d27ef1cd9932a116c8f49277</skey>
+<wxsid>h7o5Hfahzg+BT/lq</wxsid>
+<wxuin>2874542734</wxuin>
+<pass_ticket>WmC%2BUb1auY%2BhdBRrhApDiaZ%2FNln4xBWjazWS4ZQHvH8l2BAbacW0ofCLRka%2B85rp</pass_ticket>
+<isgrayscale>1</isgrayscale>
+</error>
+
+<error><ret>0</ret><message></message><skey>@crypt_678e597e_59e8d232231c3785751d396ea4a2f2a8</skey><wxsid>GegsSs4eXcmW2b+3</wxsid><wxuin>2874542734</wxuin><pass_ticket>x8cPrE%2FtMo6KwsVO1mrb1TZDHKuTYNv9jfEiT1eiczoxsdAbSBaLZuNr8YnlV9Hk</pass_ticket><isgrayscale>1</isgrayscale></error>
+
+
+cookies
+{wxuin 2874542734 / wx2.qq.com 2018-07-06 19:22:11 +0000 UTC Fri, 06-Jul-2018 19:22:11 GMT 0 true false wxuin=2874542734; Domain=wx2.qq.com; Path=/; Expires=Fri, 06-Jul-2018 19:22:11 GMT; Secure []}
+{wxsid xae0GkB8g/rYmQXS / wx2.qq.com 2018-07-06 19:22:11 +0000 UTC Fri, 06-Jul-2018 19:22:11 GMT 0 true false wxsid=xae0GkB8g/rYmQXS; Domain=wx2.qq.com; Path=/; Expires=Fri, 06-Jul-2018 19:22:11 GMT; Secure []}
+{wxloadtime 1530861731 / wx2.qq.com 2018-07-06 19:22:11 +0000 UTC Fri, 06-Jul-2018 19:22:11 GMT 0 true false wxloadtime=1530861731; Domain=wx2.qq.com; Path=/; Expires=Fri, 06-Jul-2018 19:22:11 GMT; Secure []}
+{mm_lang zh_CN / wx2.qq.com 2018-07-06 19:22:11 +0000 UTC Fri, 06-Jul-2018 19:22:11 GMT 0 true false mm_lang=zh_CN; Domain=wx2.qq.com; Path=/; Expires=Fri, 06-Jul-2018 19:22:11 GMT; Secure []}
+{webwx_data_ticket gSfBBpK2lgEtr0MjbLZrkj8P / .qq.com 2018-07-06 19:22:11 +0000 UTC Fri, 06-Jul-2018 19:22:11 GMT 0 true false webwx_data_ticket=gSfBBpK2lgEtr0MjbLZrkj8P; Domain=.qq.com; Path=/; Expires=Fri, 06-Jul-2018 19:22:11 GMT; Secure []}
+{webwxuvid a5fdd7618b59aaed4dae89d1c0c9e9796d797a5b00094a61905b046795c1077aa78975e89e1a6094b96a9749b3d55f33 / wx2.qq.com 2028-07-03 07:22:11 +0000 UTC Mon, 03-Jul-2028 07:22:11 GMT 0 true false webwxuvid=a5fdd7618b59aaed4dae89d1c0c9e9796d797a5b00094a61905b046795c1077aa78975e89e1a6094b96a9749b3d55f33; Domain=wx2.qq.com; Path=/; Expires=Mon, 03-Jul-2028 07:22:11 GMT; Secure []}
+{webwx_auth_ticket CIsBEP+YndwKGoABsWtRg6v3qkdc5ZEdLFE56BracOAo54MfWf5MyeLgMPN+dW+cmHnVIf64E8tLZvxvpB0bWnaVpNltjGpHH9F+1SYS45L6AAzQaKe4XSG4NNu0OTrT0yjVDe9Zr4j+6g23ZFJLZBy/geI5LZt3jWq+IhsvdOA58s3fEeo9k7ym1UE= / wx2.qq.com 2028-07-03 07:22:11 +0000 UTC Mon, 03-Jul-2028 07:22:11 GMT 0 true false webwx_auth_ticket=CIsBEP+YndwKGoABsWtRg6v3qkdc5ZEdLFE56BracOAo54MfWf5MyeLgMPN+dW+cmHnVIf64E8tLZvxvpB0bWnaVpNltjGpHH9F+1SYS45L6AAzQaKe4XSG4NNu0OTrT0yjVDe9Zr4j+6g23ZFJLZBy/geI5LZt3jWq+IhsvdOA58s3fEeo9k7ym1UE=; Domain=wx2.qq.com; Path=/; Expires=Mon, 03-Jul-2028 07:22:11 GMT; Secure []}
