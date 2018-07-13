@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 )
 
@@ -46,14 +45,14 @@ func WebWxInit() (err error) {
 	}
 	WebInitConf = &c
 	for i := 0; i < len(c.ContactList); i++ {
-		m_member[c.ContactList[i].UserName] = c.ContactList[i]
+		M_member[c.ContactList[i].UserName] = Contact{c.ContactList[i], true}
 	}
-	me_userName = c.User.UserName
+	Me_userName = c.User.UserName
 	return
 }
 
 type BaseRequest struct {
-	Uin      string
+	Uin      int
 	Sid      string
 	Skey     string
 	DeviceID string
@@ -153,13 +152,13 @@ func GetContract() (code string, err error) {
 	}
 	if contat.MemberCount > 0 {
 		for i := 0; i < len(contat.MemberList); i++ {
-			m_member[contat.MemberList[i].UserName] = *contat.MemberList[i]
+			M_member[contat.MemberList[i].UserName] = Contact{*contat.MemberList[i], true}
 		}
 	}
 	return
 }
 
-func BatchGetContact() (err error) {
+func BatchGetContact(usersName []string, isFriend bool) (err error) {
 	xm := url.Values{}
 	xm.Add("pass_ticket", conf.PassTicket)
 	xm.Add("type", "ex")
@@ -173,13 +172,19 @@ func BatchGetContact() (err error) {
 		conf.Skey,
 		DeviceID(),
 	}
-	for i := 0; i < len(WebInitConf.ContactList); i++ {
-		if strings.Contains(WebInitConf.ContactList[i].UserName, "@") {
-			one := ContactOne{
-				UserName: WebInitConf.ContactList[i].UserName,
-			}
-			r.List = append(r.List, one)
+	// for i := 0; i < len(WebInitConf.ContactList); i++ {
+	// 	if strings.Contains(WebInitConf.ContactList[i].UserName, "@") {
+	// 		one := ContactOne{
+	// 			UserName: WebInitConf.ContactList[i].UserName,
+	// 		}
+	// 		r.List = append(r.List, one)
+	// 	}
+	// }
+	for i := 0; i < len(usersName); i++ {
+		one := ContactOne{
+			UserName: usersName[i],
 		}
+		r.List = append(r.List, one)
 	}
 	r.Count = len(r.List)
 	bs, _ := json.Marshal(r)
@@ -202,7 +207,10 @@ func BatchGetContact() (err error) {
 	}
 	if contat.Count > 0 {
 		for i := 0; i < len(contat.MemberList); i++ {
-			m_member[contat.MemberList[i].UserName] = *contat.MemberList[i]
+			_, ok := M_member[contat.MemberList[i].UserName]
+			if !ok {
+				M_member[contat.MemberList[i].UserName] = Contact{*contat.MemberList[i], isFriend}
+			}
 		}
 	}
 	return

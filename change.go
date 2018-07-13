@@ -14,6 +14,7 @@ type StatusNotifyResp struct {
 	MsgID        string   `json:"MsgID"`
 }
 
+// 2018-07-13 20:25 选择群聊不会有statusNotify
 // 切换当前对话框 第一次是当前账号到当前账号 WebInitConf.User.UserName
 func WebWxStatusNotify(from, to string) (rsp *StatusNotifyResp, err error) {
 	xm := url.Values{}

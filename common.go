@@ -12,11 +12,10 @@ var Cli *http.Client
 var conf *XmlConfig
 var WebInitConf *InitResp
 var CgiUrl string
-var m_member map[string]Member = make(map[string]Member)   // GetContact batchgetContact webwxinit.chatrooms
-var m_chatroomViewed map[string]int = make(map[string]int) // chatroom第一次进入需要获取所有群成员
+var M_member map[string]Contact = make(map[string]Contact) // GetContact batchgetContact webwxinit.chatrooms
+var M_chatroomViewed map[string]int = make(map[string]int) // chatroom第一次进入需要获取所有群成员
 // var curr_obj string                                        // 当前聊天对象
-var me_userName string // 自己的userName
-// var deviceID string = "e435753412807776" // todo e[\d]
+var Me_userName string // 自己的userName
 var randSourse rand.Source
 
 type XmlConfig struct {
@@ -25,7 +24,7 @@ type XmlConfig struct {
 	Message     string   `xml:"message"`
 	Skey        string   `xml:"skey"`
 	Wxsid       string   `xml:"wxsid"`
-	Wxuin       string   `xml:"wxuin"`
+	Wxuin       int      `xml:"wxuin"`
 	PassTicket  string   `xml:"pass_ticket"`
 	IsGrayscale int      `xml:"isgrayscale"`
 }
@@ -59,11 +58,11 @@ type SyncKey struct {
 }
 
 func NickName(userName string) (name string) {
-	if userName == me_userName {
+	if userName == Me_userName {
 		name += "我"
 		return
 	}
-	member, ok := m_member[userName]
+	member, ok := M_member[userName]
 	if ok {
 		name += member.NickName
 		return

@@ -50,7 +50,7 @@ r3
 
 第二次（一天第一次）
 1:
-before jslojin
+before jslogin [可能也是扫码前二维码后 手速快？][x]
 {"type":"[app-runtime]","data":{"unload":{"listenerCount":117,"watchersCount":115,"scopesCount":30}}}
 {"type":"[app-timing]","data":{"appTiming":{"qrcodeStart":1531443299717,"qrcodeEnd":1531443299838},"pageTiming":{"navigationStart":1531443298614,"unloadEventStart":0,"unloadEventEnd":0,"redirectStart":0,"redirectEnd":0,"fetchStart":1531443298616,"domainLookupStart":1531443298681,"domainLookupEnd":1531443298685,"connectStart":1531443298685,"connectEnd":1531443298913,"secureConnectionStart":1531443298735,"requestStart":1531443298913,"responseStart":1531443298957,"responseEnd":1531443298992,"domLoading":1531443299002,"domInteractive":1531443299531,"domContentLoadedEventStart":1531443299564,"domContentLoadedEventEnd":1531443299572,"domComplete":1531443299707,"loadEventStart":1531443299707,"loadEventEnd":1531443299708,"timeToNonBlankPaint":1531443299554,"timeToDOMContentFlushed":1531443299538}}}
 
@@ -65,3 +65,18 @@ before jslojin
 第三次
 1，2合并:同第一次
 3：同第一次3多了passkey的query参数
+
+第五次
+1:{"type":"[app-runtime]","data":{"0":{"listenerCount":291,"watchersCount":423,"scopesCount":113},"15000":{"listenerCount":291,"watchersCount":423,"scopesCount":113},"unload":{"listenerCount":291,"watchersCount":423,"scopesCount":113}}}
+2:{"type":"[app-timing]","data":{"appTiming":{"qrcodeStart":1531448605972,"qrcodeEnd":1531448606096,"scan":1531448664996,"loginEnd":1531448669391,"initStart":1531448669392,"initEnd":1531448670008,"initContactStart":1531448670238},"pageTiming":{"navigationStart":1531448605205,"unloadEventStart":1531448605340,"unloadEventEnd":1531448605344,"redirectStart":0,"redirectEnd":0,"fetchStart":1531448605206,"domainLookupStart":1531448605206,"domainLookupEnd":1531448605206,"connectStart":1531448605206,"connectEnd":1531448605206,"secureConnectionStart":1531448605205,"requestStart":1531448605225,"responseStart":1531448605272,"responseEnd":1531448605327,"domLoading":1531448605340,"domInteractive":1531448605801,"domContentLoadedEventStart":1531448605838,"domContentLoadedEventEnd":1531448605850,"domComplete":1531448605971,"loadEventStart":1531448605971,"loadEventEnd":1531448605973,"timeToNonBlankPaint":1531448605824,"timeToDOMContentFlushed":1531448605802}}}
+
+第六次
+1：扫码前 二维码生成之后
+{"type":"[app-runtime]","data":{"0":{"listenerCount":303,"watchersCount":446,"scopesCount":118},"15000":{"listenerCount":303,"watchersCount":446,"scopesCount":118},"600000":{"listenerCount":309,"watchersCount":481,"scopesCount":126},"unload":{"listenerCount":309,"watchersCount":491,"scopesCount":130}}}
+2：{"type":"[app-timing]","data":{"appTiming":{"qrcodeStart":1531449872857,"qrcodeEnd":1531449873005,"scan":1531449975766,"loginEnd":1531449979719,"initStart":1531449979720,"initEnd":1531449980364,"initContactStart":1531449980512},"pageTiming":{"navigationStart":1531449872033,"unloadEventStart":1531449872171,"unloadEventEnd":1531449872174,"redirectStart":0,"redirectEnd":0,"fetchStart":1531449872034,"domainLookupStart":1531449872034,"domainLookupEnd":1531449872034,"connectStart":1531449872034,"connectEnd":1531449872034,"secureConnectionStart":1531449872033,"requestStart":1531449872068,"responseStart":1531449872128,"responseEnd":1531449872159,"domLoading":1531449872170,"domInteractive":1531449872726,"domContentLoadedEventStart":1531449872752,"domContentLoadedEventEnd":1531449872761,"domComplete":1531449898031,"loadEventStart":1531449898031,"loadEventEnd":1531449898032,"timeToNonBlankPaint":1531449872360,"timeToDOMContentFlushed":1531449872747}}}
+
+第七次 重启电脑
+1:{"type":"[app-runtime]","data":{"unload":{"listenerCount":117,"watchersCount":115,"scopesCount":30}}}
+{"type":"[app-timing]","data":{"appTiming":{"qrcodeStart":1531451645749,"qrcodeEnd":1531451645918},"pageTiming":{"navigationStart":1531451644268,"unloadEventStart":1531451644443,"unloadEventEnd":1531451644446,"redirectStart":0,"redirectEnd":0,"fetchStart":1531451644268,"domainLookupStart":1531451644268,"domainLookupEnd":1531451644268,"connectStart":1531451644268,"connectEnd":1531451644268,"secureConnectionStart":1531451644268,"requestStart":1531451644359,"responseStart":1531451644397,"responseEnd":1531451644431,"domLoading":1531451644443,"domInteractive":1531451645259,"domContentLoadedEventStart":1531451645338,"domContentLoadedEventEnd":1531451645345,"domComplete":1531451645652,"loadEventStart":1531451645652,"loadEventEnd":1531451645689,"timeToNonBlankPaint":1531451644908,"timeToDOMContentFlushed":1531451645319}}}
+2:同r1
+3:同之前的2 type:[app-timing]

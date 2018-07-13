@@ -59,7 +59,7 @@ func GetSyncCheck() (retCode, selector int, respStr string, err error) {
 	xm.Set("r", fmt.Sprintf("%d", time.Now().Unix()))
 	xm.Set("sid", conf.Wxsid)
 	xm.Set("skey", conf.Skey)
-	xm.Set("uin", conf.Wxuin)
+	xm.Set("uin", fmt.Sprint(conf.Wxuin))
 	var synckeyStr string
 	for i := 0; i < len(WebInitConf.SyncKey.List); i++ {
 		synckeyStr += fmt.Sprintf("%d_%d|", WebInitConf.SyncKey.List[i].Key, WebInitConf.SyncKey.List[i].Val)

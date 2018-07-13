@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"test/wechat"
+	"test/wechat/combo"
 	"time"
 )
 
@@ -29,6 +30,13 @@ func main() {
 		if code == "200" {
 			break
 		}
+	}
+
+	// report0
+	err = wechat.Report0()
+	if err != nil {
+		fmt.Println("[wechat.Report0()]", err)
+		return
 	}
 
 	fmt.Println("redirect_url=", redirect_url)
@@ -60,37 +68,44 @@ func main() {
 		return
 	}
 	fmt.Println("wechat.GetContract().Done")
-	// err = wechat.BatchGetContact()
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// fmt.Println("wechat.BatchGetContact().Done")
+	// report1
+	wechat.Report1()
+	if err != nil {
+		fmt.Println("[wechat.Report1()]", err)
+		return
+	}
 
 	chErr := make(chan error)
 
-	_, err = wechat.PostWebWxSync()
+	syncResp, err := wechat.PostWebWxSync()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Println("wechat.PostWebWxSync().Done")
+	rooms, err := combo.GetLastChatrooms(syncResp)
+	if err != nil {
+		fmt.Println("combo.GetLastChatrooms(syncResp)", err)
+		return
+	}
+	if len(rooms) > 0 {
+		err = wechat.BatchGetContact(rooms, false) // 群里的可能不是直接好友
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println("wechat.BatchGetContact().Done")
+	}
 	wechat.SetSyncCookies()
 
 	go SyncRecv(chErr)
+	// after first send msg
+	go FirstSendReport(chErr)
+
 	err = <-chErr
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	// _, _, err = wechat.GetSyncCheck()
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// // fmt.Println(needSyncPost)
-	// fmt.Println("wechat.GetSyncCheck().Done")
-	// return
 }
 
 func SyncRecv(chErr chan<- error) {
@@ -133,6 +148,19 @@ func SyncRecv(chErr chan<- error) {
 		default:
 			fmt.Println(respStr)
 			chErr <- errors.New("retCode:" + fmt.Sprint(retCode))
+			return
+		}
+	}
+}
+
+func FirstSendReport(chErr chan<- error) {
+	for {
+		time.Sleep(10 * time.Minute)
+		if wechat.HaveFirstSendMsg {
+			err := wechat.ReportSendMsg()
+			if err != nil {
+				chErr <- err
+			}
 			return
 		}
 	}

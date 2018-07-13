@@ -94,8 +94,8 @@ type MsgRecv struct {
 	MediaId              string
 	Url                  string
 	AppMsgType           int
-	StatusNotifyCode     int
-	StatusNotifyUserName string
+	StatusNotifyCode     int         // 4所有联系人和chatroom 有排序 5单个
+	StatusNotifyUserName string      // 逗号分隔的userName
 	RecommendInfo        interface{} // ?
 	AppInfo              struct {    // ?
 		AppID string

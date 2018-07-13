@@ -41,20 +41,84 @@ func SetCookiesForFirst(rawUrl string) {
 	return
 }
 
-// before https://login.wx.qq.com/cgi-bin/mmwebwx-bin/login?loginicon=true&uuid=IaKFGQz7Bw==&tip=0&r=1943993128&_=1531359321280
-func Report1() (err error) {
-	r1_url := "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxstatreport?fun=new"
-	SetCookiesForFirst(r1_url)
+var firstLoginTime time.Time
+var FirstSendMsgTime time.Time
+var HaveFirstSendMsg bool
+
+// when open wx2.qq.com, before jslogin
+func Report0() (err error) {
+	rpt_url := "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxstatreport?fun=new"
+	SetCookiesForFirst(rpt_url)
 	breq := BaseRequest{
 		DeviceID: DeviceID(),
 	}
 	m := make(map[string]interface{})
 	m["BaseRequest"] = breq
+	m["Count"] = 2
+	t1 := fmt.Sprint(time.Now().Add(-time.Second).UnixNano() / 1e6)
+	firstLoginTime = time.Now()
+	t2 := fmt.Sprint(firstLoginTime.UnixNano() / 1e6)
+	m["List"] = []interface{}{ //
+		map[string]interface{}{
+			"Text": `{"type":"[app-runtime]","data":{"unload":{"listenerCount":117,"watchersCount":115,"scopesCount":30}}}`,
+			"Type": 1,
+		},
+		map[string]interface{}{
+			"Text": `{"type":"[app-timing]","data":{"appTiming":{"qrcodeStart":` + t2 + `,"qrcodeEnd":` + t2 + `},"pageTiming":{"navigationStart":` + t1 + `,"unloadEventStart":` + t1 + `,"unloadEventEnd":` + t1 + `,"redirectStart":0,"redirectEnd":0,"fetchStart":` + t1 + `,"domainLookupStart":` + t1 + `,"domainLookupEnd":` + t1 + `,"connectStart":` + t1 + `,"connectEnd":` + t1 + `,"secureConnectionStart":` + t1 + `,"requestStart":` + t1 + `,"responseStart":` + t1 + `,"responseEnd":` + t1 + `,"domLoading":` + t1 + `,"domInteractive":` + t2 + `,"domContentLoadedEventStart":` + t2 + `,"domContentLoadedEventEnd":` + t2 + `,"domComplete":` + t2 + `,"loadEventStart":` + t2 + `,"loadEventEnd":` + t2 + `,"timeToNonBlankPaint":` + t1 + `,"timeToDOMContentFlushed":` + t2 + `}}}`,
+			"Type": 1,
+		},
+	}
+	breqdata, _ := json.Marshal(m)
+	req, _ := http.NewRequest("post", rpt_url, bytes.NewBuffer(breqdata))
+	resp, err := Cli.Do(req)
+	if err != nil {
+		return
+	}
+	if resp.StatusCode != 200 {
+		err = errors.New("Report0().[listCount=2].resp.StatusCode =" + fmt.Sprint(resp.StatusCode))
+	}
+	breq = BaseRequest{
+		DeviceID: DeviceID(),
+	}
+	m = make(map[string]interface{})
+	m["BaseRequest"] = breq
 	m["Count"] = 0
 	m["List"] = []string{}
-	breqdata, _ := json.Marshal(m)
+	breqdata, _ = json.Marshal(m)
 
-	req, _ := http.NewRequest("post", r1_url, bytes.NewBuffer(breqdata))
+	req, _ = http.NewRequest("post", rpt_url, bytes.NewBuffer(breqdata))
+	resp, err = Cli.Do(req)
+	if err != nil {
+		return
+	}
+	if resp.StatusCode != 200 {
+		err = errors.New("Report0().[listCount=0].resp.StatusCode =" + fmt.Sprint(resp.StatusCode))
+	}
+	return
+}
+
+// after getcontact
+func Report1() (err error) {
+	rpt_url := "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxstatreport?fun=new&pass_ticket=" + conf.PassTicket
+	breq := BaseRequest{
+		DeviceID: DeviceID(),
+		Sid:      conf.Wxsid,
+		Uin:      conf.Wxuin,
+	}
+	m := make(map[string]interface{})
+	m["BaseRequest"] = breq
+	m["Count"] = 1
+	t1 := fmt.Sprint(firstLoginTime.UnixNano() / 1e6)
+	t2 := fmt.Sprint(time.Now().Add(-3*time.Second).UnixNano() / 1e6)
+	t3 := fmt.Sprint(time.Now().UnixNano() / 1e6)
+	m["List"] = []interface{}{
+		map[string]interface{}{
+			"Text": `{"type":"[app-timing]","data":{"appTiming":{"qrcodeStart":` + t1 + `,"qrcodeEnd":` + t1 + `,"scan":` + t2 + `,"loginEnd":` + t3 + `,"initStart":` + t3 + `,"initEnd":` + t3 + `,"initContactStart":` + t3 + `},"pageTiming":{"navigationStart":` + t1 + `,"unloadEventStart":0,"unloadEventEnd":0,"redirectStart":0,"redirectEnd":0,"fetchStart":` + t1 + `,"domainLookupStart":` + t1 + `,"domainLookupEnd":` + t1 + `,"connectStart":` + t1 + `,"connectEnd":` + t1 + `,"secureConnectionStart":` + t1 + `,"requestStart":` + t1 + `,"responseStart":` + t1 + `,"responseEnd":` + t1 + `,"domLoading":` + t1 + `,"domInteractive":` + t1 + `,"domContentLoadedEventStart":` + t1 + `,"domContentLoadedEventEnd":` + t1 + `,"domComplete":` + t1 + `,"loadEventStart":` + t1 + `,"loadEventEnd":` + t1 + `,"timeToNonBlankPaint":` + t1 + `,"timeToDOMContentFlushed":` + t1 + `}}}`,
+			"Type": 1,
+		},
+	}
+	breqdata, _ := json.Marshal(m)
+	req, _ := http.NewRequest("post", rpt_url, bytes.NewBuffer(breqdata))
 	resp, err := Cli.Do(req)
 	if err != nil {
 		return
@@ -65,10 +129,41 @@ func Report1() (err error) {
 	return
 }
 
+// 登陆上之后，如果每10分钟内有发送消息，需要[发送框]
+func ReportSendMsg() (err error) {
+	rpt_url := "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxstatreport?fun=new&pass_ticket=" + conf.PassTicket
+	breq := BaseRequest{
+		DeviceID: DeviceID(),
+		Sid:      conf.Wxsid,
+		Uin:      conf.Wxuin,
+	}
+	m := make(map[string]interface{})
+	m["BaseRequest"] = breq
+	m["Count"] = 1
+	t1 := fmt.Sprint(FirstSendMsgTime.Add(-5*time.Second).UnixNano() / 1e6)
+	t2 := fmt.Sprint(FirstSendMsgTime.UnixNano() / 1e6)
+	m["List"] = []interface{}{
+		map[string]interface{}{
+			"Text": `{"type":"[action-record]","data":{"actions":[{"type":"click","action":"发送框","time":` + t1 + `},{"type":"keydown","action":"发送框-enter","time":` + t2 + `},{"type":"keydown","action":"发送框-enter","time":` + t2 + `}]}}`,
+			"Type": 1,
+		},
+	}
+	breqdata, _ := json.Marshal(m)
+	req, _ := http.NewRequest("post", rpt_url, bytes.NewBuffer(breqdata))
+	resp, err := Cli.Do(req)
+	if err != nil {
+		return
+	}
+	if resp.StatusCode != 200 {
+		err = errors.New("ReportSendMsg().resp.StatusCode =" + fmt.Sprint(resp.StatusCode))
+	}
+	return
+}
+
+// 当天第二次登录
 // after webwxgetbatchcontact
 func Report2() (err error) {
-	r2_url := CgiUrl + "/webwxstatreport?fun=new"
-	SetCookiesForFirst(r2_url)
+	rpt_url := "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxstatreport?fun=new"
 	breq := BaseRequest{
 		conf.Wxuin,
 		conf.Wxsid,
@@ -85,7 +180,7 @@ func Report2() (err error) {
 		},
 	}
 	breqdata, _ := json.Marshal(m)
-	req, _ := http.NewRequest("post", r2_url, bytes.NewBuffer(breqdata))
+	req, _ := http.NewRequest("post", rpt_url, bytes.NewBuffer(breqdata))
 	resp, err := Cli.Do(req)
 	if err != nil {
 		return
@@ -98,8 +193,7 @@ func Report2() (err error) {
 
 // after report2
 func Report3() {
-	r2_url := CgiUrl + "/webwxstatreport?fun=new"
-	SetCookiesForFirst(r2_url)
+	rpt_url := "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxstatreport?fun=new"
 	breq := BaseRequest{
 		conf.Wxuin,
 		conf.Wxsid,
@@ -119,7 +213,7 @@ func Report3() {
 		},
 	}
 	breqdata, _ := json.Marshal(m)
-	req, _ := http.NewRequest("post", r2_url, bytes.NewBuffer(breqdata))
+	req, _ := http.NewRequest("post", rpt_url, bytes.NewBuffer(breqdata))
 	resp, err := Cli.Do(req)
 	if err != nil {
 		return
@@ -128,8 +222,4 @@ func Report3() {
 		err = errors.New("Report3().resp.StatusCode =" + fmt.Sprint(resp.StatusCode))
 	}
 	return
-}
-
-func Reprot4() {
-
 }

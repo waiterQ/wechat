@@ -12,3 +12,7 @@ select为2代表有消息 为0代表暂无消息
 deviceID为1个以e开头长度16的 e356856689187022 是否有规则未知
 
 在群里的其他人发言 从chatroom的@@username到自己@username 内容为@其他人username<br/>内容
+
+report似乎是用来检测是网页微信还是直接调用接口的 有一开始初始化 有第一次发送消息 logout
+
+之前切换当前群聊的时候会调用statusNotify 现在不会了？ (2018-07-13 20:25)
