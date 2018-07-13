@@ -26,3 +26,42 @@ cookies
 {webwx_data_ticket gSfBBpK2lgEtr0MjbLZrkj8P / .qq.com 2018-07-06 19:22:11 +0000 UTC Fri, 06-Jul-2018 19:22:11 GMT 0 true false webwx_data_ticket=gSfBBpK2lgEtr0MjbLZrkj8P; Domain=.qq.com; Path=/; Expires=Fri, 06-Jul-2018 19:22:11 GMT; Secure []}
 {webwxuvid a5fdd7618b59aaed4dae89d1c0c9e9796d797a5b00094a61905b046795c1077aa78975e89e1a6094b96a9749b3d55f33 / wx2.qq.com 2028-07-03 07:22:11 +0000 UTC Mon, 03-Jul-2028 07:22:11 GMT 0 true false webwxuvid=a5fdd7618b59aaed4dae89d1c0c9e9796d797a5b00094a61905b046795c1077aa78975e89e1a6094b96a9749b3d55f33; Domain=wx2.qq.com; Path=/; Expires=Mon, 03-Jul-2028 07:22:11 GMT; Secure []}
 {webwx_auth_ticket CIsBEP+YndwKGoABsWtRg6v3qkdc5ZEdLFE56BracOAo54MfWf5MyeLgMPN+dW+cmHnVIf64E8tLZvxvpB0bWnaVpNltjGpHH9F+1SYS45L6AAzQaKe4XSG4NNu0OTrT0yjVDe9Zr4j+6g23ZFJLZBy/geI5LZt3jWq+IhsvdOA58s3fEeo9k7ym1UE= / wx2.qq.com 2028-07-03 07:22:11 +0000 UTC Mon, 03-Jul-2028 07:22:11 GMT 0 true false webwx_auth_ticket=CIsBEP+YndwKGoABsWtRg6v3qkdc5ZEdLFE56BracOAo54MfWf5MyeLgMPN+dW+cmHnVIf64E8tLZvxvpB0bWnaVpNltjGpHH9F+1SYS45L6AAzQaKe4XSG4NNu0OTrT0yjVDe9Zr4j+6g23ZFJLZBy/geI5LZt3jWq+IhsvdOA58s3fEeo9k7ym1UE=; Domain=wx2.qq.com; Path=/; Expires=Mon, 03-Jul-2028 07:22:11 GMT; Secure []}
+
+
+{wxloadtime 1531384075_expired / wx2.qq.com 2018-07-12 20:28:03 +0000 UTC Thu, 12-Jul-2018 20:28:03 GMT 0 true false wxloadtime=1531384075_expired; Domain=wx2.qq.com; Path=/; Expires=Thu, 12-Jul-2018 20:28:03 GMT; Secure []}
+{wxpluginkey 1531371845 / wx2.qq.com 2018-07-12 20:28:03 +0000 UTC Thu, 12-Jul-2018 20:28:03 GMT 0 true false wxpluginkey=1531371845; Domain=wx2.qq.com; Path=/; Expires=Thu, 12-Jul-2018 20:28:03 GMT; Secure []}
+{wxuin 2874542734 / wx2.qq.com 2018-07-15 08:28:03 +0000 UTC Sun, 15-Jul-2018 08:28:03 GMT 0 true false wxuin=2874542734; Domain=wx2.qq.com; Path=/; Expires=Sun, 15-Jul-2018 08:28:03 GMT; Secure []}
+{wxsid 8pkNeR36/yN5UAnU / wx2.qq.com 2018-07-12 20:28:03 +0000 UTC Thu, 12-Jul-2018 20:28:03 GMT 0 true false wxsid=8pkNeR36/yN5UAnU; Domain=wx2.qq.com; Path=/; Expires=Thu, 12-Jul-2018 20:28:03 GMT; Secure []}
+{webwx_data_ticket gSfwcH0z5DWTGoIHdUOMP5W+ / .qq.com 2018-07-12 20:28:03 +0000 UTC Thu, 12-Jul-2018 20:28:03 GMT 0 true false webwx_data_ticket=gSfwcH0z5DWTGoIHdUOMP5W+; Domain=.qq.com; Path=/; Expires=Thu, 12-Jul-2018 20:28:03 GMT; Secure []}
+{wxpluginkey 1531383933 / wx2.qq.com 2018-07-12 20:28:03 +0000 UTC Thu, 12-Jul-2018 20:28:03 GMT 0 true false wxpluginkey=1531383933; Domain=wx2.qq.com; Path=/; Expires=Thu, 12-Jul-2018 20:28:03 GMT; Secure []}
+{wxuin 2874542734 / wx2.qq.com 2018-07-15 08:28:03 +0000 UTC Sun, 15-Jul-2018 08:28:03 GMT 0 true false wxuin=2874542734; Domain=wx2.qq.com; Path=/; Expires=Sun, 15-Jul-2018 08:28:03 GMT; Secure []}
+{wxsid 8pkNeR36/yN5UAnU / wx2.qq.com 2018-07-12 20:28:03 +0000 UTC Thu, 12-Jul-2018 20:28:03 GMT 0 true false wxsid=8pkNeR36/yN5UAnU; Domain=wx2.qq.com; Path=/; Expires=Thu, 12-Jul-2018 20:28:03 GMT; Secure []}
+{webwx_data_ticket gSfwcH0z5DWTGoIHdUOMP5W+ / .qq.com 2018-07-12 20:28:03 +0000 UTC Thu, 12-Jul-2018 20:28:03 GMT 0 true false webwx_data_ticket=gSfwcH0z5DWTGoIHdUOMP5W+; Domain=.qq.com; Path=/; Expires=Thu, 12-Jul-2018 20:28:03 GMT; Secure []}
+
+
+关于report
+r2
+{"type":"[app-runtime]","data":{"0":{"listenerCount":297,"watchersCount":430,"scopesCount":112},"15000":{"listenerCount":297,"watchersCount":430,"scopesCount":112},"600000":{"listenerCount":297,"watchersCount":433,"scopesCount":113},"unload":{"listenerCount":351,"watchersCount":688,"scopesCount":169}}}
+
+r3
+{"BaseRequest":{"Uin":2874542734,"Sid":"rdN2IQ91sthesHlF","DeviceID":"e661353884759332"},"Count":1,"List":[{"Type":1,"Text":"{\"type\":\"[app-timing]\",\"data\":{\"appTiming\":{\"initStart\":1531359335162,\"initEnd\":1531359336012,\"initContactStart\":1531359336208},\"pageTiming\":{\"navigationStart\":1531359334232,\"unloadEventStart\":0,\"unloadEventEnd\":0,\"redirectStart\":1531359334257,\"redirectEnd\":1531359334739,\"fetchStart\":1531359334746,\"domainLookupStart\":1531359334746,\"domainLookupEnd\":1531359334746,\"connectStart\":1531359334746,\"connectEnd\":1531359334746,\"secureConnectionStart\":1531359334232,\"requestStart\":1531359334753,\"responseStart\":1531359334808,\"responseEnd\":1531359334839,\"domLoading\":1531359334851,\"domInteractive\":1531359335502,\"domContentLoadedEventStart\":1531359335566,\"domContentLoadedEventEnd\":1531359335580,\"domComplete\":1531359335660,\"loadEventStart\":1531359335660,\"loadEventEnd\":1531359335662,\"timeToNonBlankPaint\":1531359335558,\"timeToDOMContentFlushed\":1531359335502}}}"}]}
+
+{"type":"[app-timing]","data":{"appTiming":{"initStart":1531359335162,"initEnd":1531359336012,"initContactStart":1531359336208},"pageTiming":{"navigationStart":1531359334232,"unloadEventStart":0,"unloadEventEnd":0,"redirectStart":1531359334257,"redirectEnd":1531359334739,"fetchStart":1531359334746,"domainLookupStart":1531359334746,"domainLookupEnd":1531359334746,"connectStart":1531359334746,"connectEnd":1531359334746,"secureConnectionStart":1531359334232,"requestStart":1531359334753,"responseStart":1531359334808,"responseEnd":1531359334839,"domLoading":1531359334851,"domInteractive":1531359335502,"domContentLoadedEventStart":1531359335566,"domContentLoadedEventEnd":1531359335580,"domComplete":1531359335660,"loadEventStart":1531359335660,"loadEventEnd":1531359335662,"timeToNonBlankPaint":1531359335558,"timeToDOMContentFlushed":1531359335502}}}
+
+第二次（一天第一次）
+1:
+before jslojin
+{"type":"[app-runtime]","data":{"unload":{"listenerCount":117,"watchersCount":115,"scopesCount":30}}}
+{"type":"[app-timing]","data":{"appTiming":{"qrcodeStart":1531443299717,"qrcodeEnd":1531443299838},"pageTiming":{"navigationStart":1531443298614,"unloadEventStart":0,"unloadEventEnd":0,"redirectStart":0,"redirectEnd":0,"fetchStart":1531443298616,"domainLookupStart":1531443298681,"domainLookupEnd":1531443298685,"connectStart":1531443298685,"connectEnd":1531443298913,"secureConnectionStart":1531443298735,"requestStart":1531443298913,"responseStart":1531443298957,"responseEnd":1531443298992,"domLoading":1531443299002,"domInteractive":1531443299531,"domContentLoadedEventStart":1531443299564,"domContentLoadedEventEnd":1531443299572,"domComplete":1531443299707,"loadEventStart":1531443299707,"loadEventEnd":1531443299708,"timeToNonBlankPaint":1531443299554,"timeToDOMContentFlushed":1531443299538}}}
+
+
+2:同r2
+
+3:
+{"type":"[app-timing]","data":{"appTiming":{"qrcodeStart":1531443309864,"qrcodeEnd":1531443310050,"scan":1531443323089,"loginEnd":1531443327192,"initStart":1531443327193,"initEnd":1531443327954,"initContactStart":1531443328118},"pageTiming":{"navigationStart":1531443308716,"unloadEventStart":1531443308886,"unloadEventEnd":1531443308889,"redirectStart":0,"redirectEnd":0,"fetchStart":1531443308716,"domainLookupStart":1531443308733,"domainLookupEnd":1531443308741,"connectStart":1531443308742,"connectEnd":1531443308798,"secureConnectionStart":1531443308769,"requestStart":1531443308799,"responseStart":1531443308852,"responseEnd":1531443308880,"domLoading":1531443308886,"domInteractive":1531443309712,"domContentLoadedEventStart":1531443309736,"domContentLoadedEventEnd":1531443309745,"domComplete":1531443309852,"loadEventStart":1531443309852,"loadEventEnd":1531443309853,"timeToNonBlankPaint":1531443309227,"timeToDOMContentFlushed":1531443309729}}}
+
+4:发送框r 似乎是在第一次发送消息自后20个左右的sync.get[x] 登录之后10分钟[x] 登录之后每10分钟判断一次，如果之前有发送过消息就发送
+
+第三次
+1，2合并:同第一次
+3：同第一次3多了passkey的query参数

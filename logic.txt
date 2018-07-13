@@ -1,0 +1,14 @@
+// 选择 发送 接收
+选择个人无请求 
+发送消息 sync.get会立即返回
+接收消息 sync.get立即返回 请求的sync.post方法里有消息内容
+	sync.post有当前所有新信息
+
+get.syncCheck.select=2 则需要post.webwxsync =0则不需要
+select为2代表有消息 为0代表暂无消息
+
+选择一个未选择过的群的时候会有statusnotify 会batchgetcontact获取所有群员(每次50个)
+
+deviceID为1个以e开头长度16的 e356856689187022 是否有规则未知
+
+在群里的其他人发言 从chatroom的@@username到自己@username 内容为@其他人username<br/>内容

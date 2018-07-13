@@ -130,6 +130,13 @@ func GetLoginUrlAfterAuth(uuid string) (redirect_uri, code string, err error) {
 			redirect_uri = pmSub[1]
 			u, _ := url.Parse(redirect_uri)
 			CgiUrl = u.Scheme + "://" + u.Host + "/cgi-bin/mmwebwx-bin"
+			for i := 0; i < len(URLPool); i++ { // 设置sync同步消息用
+				if URLPool[i].IndexUrl == u.Host {
+					syncHost = u.Host
+					syncUrl = u.Scheme + "://" + URLPool[i].SyncUrl + "/cgi-bin/mmwebwx-bin/synccheck"
+					break
+				}
+			}
 		} else {
 			err = errors.New("regex error in window.redirect_uri")
 			return
@@ -146,17 +153,6 @@ func GetLoginUrlAfterAuth(uuid string) (redirect_uri, code string, err error) {
 		err = errors.New("未知错误")
 	}
 	return
-}
-
-type XmlConfig struct {
-	XMLName     xml.Name `xml:"error"`
-	Ret         int      `xml:"ret"`
-	Message     string   `xml:"message"`
-	Skey        string   `xml:"skey"`
-	Wxsid       string   `xml:"wxsid"`
-	Wxuin       string   `xml:"wxuin"`
-	PassTicket  string   `xml:"pass_ticket"`
-	IsGrayscale int      `xml:"isgrayscale"`
 }
 
 func Login(url string) (err error) {

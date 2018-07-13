@@ -3,10 +3,12 @@ package wechat
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -21,7 +23,7 @@ func WebWxInit() (err error) {
 		conf.Wxuin,
 		conf.Wxsid,
 		conf.Skey,
-		deviceID,
+		DeviceID(),
 	}
 	m := make(map[string]interface{})
 	m["BaseRequest"] = breq
@@ -42,9 +44,11 @@ func WebWxInit() (err error) {
 	if err != nil {
 		return
 	}
-	webInitConf = &c
-	// bs, _ := ioutil.ReadAll(resp.Body)
-	// fmt.Println("WebInit", string(bs))
+	WebInitConf = &c
+	for i := 0; i < len(c.ContactList); i++ {
+		m_member[c.ContactList[i].UserName] = c.ContactList[i]
+	}
+	me_userName = c.User.UserName
 	return
 }
 
@@ -53,26 +57,6 @@ type BaseRequest struct {
 	Sid      string
 	Skey     string
 	DeviceID string
-}
-
-type InitResp struct {
-	BaseResponse *struct {
-		Ret    int
-		ErrMsg string
-	} `json:"BaseResponse"`
-	User                User    `json:"User"`
-	Count               int     `json:"Count"`
-	ContactList         []User  `json:"ContactList"`
-	SyncKey             SyncKey `json:"SyncKey"`
-	ChatSet             string  `json:"ChatSet"`
-	SKey                string  `json:"SKey"`
-	ClientVersion       int     `json:"ClientVersion"`
-	SystemTime          int     `json:"SystemTime"`
-	GrayScale           int     `json:"GrayScale"`
-	InviteStartCount    int     `json:"InviteStartCount"`
-	MPSubscribeMsgCount int     `json:"MPSubscribeMsgCount"`
-	//MPSubscribeMsgList  string  `json:"MPSubscribeMsgList"`
-	ClickReportInterval int `json:"ClickReportInterval"`
 }
 
 type User struct {
@@ -97,55 +81,9 @@ type User struct {
 	SnsFlag           int    `json:"SnsFlag" xml:""`
 }
 
-type SyncKey struct {
-	Count int `json:"Count"`
-	List  []struct {
-		Key int `json:"Key"`
-		Val int `json:"Val"`
-	} `json:"List"`
-}
-
 type BaseResp struct {
 	Ret    int
 	ErrMsg string
-}
-
-type StatusNotifyResp struct {
-	BaseResponse BaseResp `json:"BaseResponse"`
-	MsgID        string   `json:"MsgID"`
-}
-
-func WebWxStatusNotify() (rsp *StatusNotifyResp, err error) {
-	xm := url.Values{}
-	xm.Add("pass_ticket", conf.PassTicket)
-	statusnotyfy_url := CgiUrl + "/webwxstatusnotify?" + xm.Encode()
-	breq := BaseRequest{
-		conf.Wxuin,
-		conf.Wxsid,
-		conf.Skey,
-		deviceID,
-	}
-	m := make(map[string]interface{})
-	m["BaseRequest"] = breq
-	m["ClientMsgId"] = time.Now().UnixNano() / 1e6
-	m["Code"] = 3
-	m["FromUserName"] = webInitConf.User.UserName
-	m["ToUserName"] = webInitConf.User.UserName
-	breqdata, _ := json.Marshal(m)
-	req, _ := http.NewRequest("post", statusnotyfy_url, bytes.NewBuffer(breqdata))
-	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
-	resp, err := Cli.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-
-	rsp = &StatusNotifyResp{}
-	err = json.NewDecoder(resp.Body.(io.Reader)).Decode(rsp)
-	if err != nil {
-		return
-	}
-	return
 }
 
 type Member struct {
@@ -185,11 +123,12 @@ type Member struct {
 type ContactResp struct {
 	BaseResponse *BaseResp
 	MemberCount  int
+	Count        int // batchgetcontract type=ex
 	MemberList   []*Member
 	Seq          int
 }
 
-func GetContract() (err error) {
+func GetContract() (code string, err error) {
 	xm := url.Values{}
 	xm.Add("pass_ticket", conf.PassTicket)
 	xm.Add("seq", "0")
@@ -208,6 +147,10 @@ func GetContract() (err error) {
 	if err != nil {
 		return
 	}
+	// fmt.Println(contat)
+	if contat.BaseResponse.Ret != 0 {
+		return fmt.Sprintf("%d", contat.BaseResponse.Ret), errors.New(contat.BaseResponse.ErrMsg)
+	}
 	if contat.MemberCount > 0 {
 		for i := 0; i < len(contat.MemberList); i++ {
 			m_member[contat.MemberList[i].UserName] = *contat.MemberList[i]
@@ -223,5 +166,53 @@ func BatchGetContact() (err error) {
 	xm.Add("r", fmt.Sprintf("%d", time.Now().UnixNano()/1e6))
 	xm.Add("lang", "zh_CN")
 	morecontact_url := CgiUrl + "/webwxbatchgetcontact?" + xm.Encode()
-	req, _ := http.NewRequest("post", morecontact_url, nil)
+	r := BatchContactReq{}
+	r.BaseReq = &BaseRequest{
+		conf.Wxuin,
+		conf.Wxsid,
+		conf.Skey,
+		DeviceID(),
+	}
+	for i := 0; i < len(WebInitConf.ContactList); i++ {
+		if strings.Contains(WebInitConf.ContactList[i].UserName, "@") {
+			one := ContactOne{
+				UserName: WebInitConf.ContactList[i].UserName,
+			}
+			r.List = append(r.List, one)
+		}
+	}
+	r.Count = len(r.List)
+	bs, _ := json.Marshal(r)
+
+	req, _ := http.NewRequest("post", morecontact_url, bytes.NewReader(bs))
+	req.Header.Set("Content-Type", "application/json;charset=utf-8")
+	resp, err := Cli.Do(req)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+
+	contat := &ContactResp{}
+	err = json.NewDecoder(resp.Body.(io.Reader)).Decode(contat)
+	if err != nil {
+		return
+	}
+	if contat.BaseResponse.Ret != 0 && contat.BaseResponse.Ret != -1 {
+		return errors.New(contat.BaseResponse.ErrMsg)
+	}
+	if contat.Count > 0 {
+		for i := 0; i < len(contat.MemberList); i++ {
+			m_member[contat.MemberList[i].UserName] = *contat.MemberList[i]
+		}
+	}
+	return
+}
+
+type BatchContactReq struct {
+	BaseReq *BaseRequest `json:"BaseRequest"`
+	Count   int
+	List    []ContactOne
+}
+type ContactOne struct {
+	UserName string
 }
