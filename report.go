@@ -160,66 +160,107 @@ func ReportSendMsg() (err error) {
 	return
 }
 
-// 当天第二次登录
-// after webwxgetbatchcontact
-func Report2() (err error) {
-	rpt_url := "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxstatreport?fun=new"
+func ReportLogout() (err error) {
+	rpt_url := CgiUrl + "/webwxstatreport?fun=new"
 	breq := BaseRequest{
-		conf.Wxuin,
-		conf.Wxsid,
-		"",
-		DeviceID(),
+		DeviceID: DeviceID(),
+		Sid:      conf.Wxsid,
+		Uin:      conf.Wxuin,
 	}
 	m := make(map[string]interface{})
 	m["BaseRequest"] = breq
 	m["Count"] = 1
-	m["List"] = []interface{}{ // todo
+	lifeTime := time.Now().Sub(firstLoginTime) / 1e6
+	var rmsg, rconv, smsg, sconv int
+	for username, count := range MrCount {
+		if username != Me_userName {
+			rmsg += count
+			rconv += 1
+		}
+	}
+	for _, count := range MsCount {
+		smsg += count
+		sconv += 1
+	}
+	m["List"] = []interface{}{ //
 		map[string]interface{}{
-			"Text": `{"type":"[app-runtime]","data":{"0":{"listenerCount":297,"watchersCount":430,"scopesCount":112},"15000":{"listenerCount":297,"watchersCount":430,"scopesCount":112},"600000":{"listenerCount":297,"watchersCount":433,"scopesCount":113},"unload":{"listenerCount":351,"watchersCount":688,"scopesCount":169}}}`,
+			"Text": fmt.Sprintf(`{"type":"[session-data]","data":{"uin":%d,"browser":"%s","rmsg":%d,"rconv":%d,"smsg":%d,"sconv":%d,"lifetime":%d}}`,
+				conf.Wxuin, ua, rmsg, rconv, smsg, sconv, lifeTime),
 			"Type": 1,
 		},
 	}
-	breqdata, _ := json.Marshal(m)
-	req, _ := http.NewRequest("post", rpt_url, bytes.NewBuffer(breqdata))
+	formdata, _ := json.Marshal(m)
+	req, _ := http.NewRequest("post", rpt_url, bytes.NewBuffer(formdata))
 	resp, err := Cli.Do(req)
 	if err != nil {
 		return
 	}
 	if resp.StatusCode != 200 {
-		err = errors.New("Report2().resp.StatusCode =" + fmt.Sprint(resp.StatusCode))
+		err = errors.New("ReportLogout().resp.StatusCode =" + fmt.Sprint(resp.StatusCode))
 	}
 	return
 }
 
+// 当天第二次登录
+// after webwxgetbatchcontact
+// func Report2() (err error) {
+// 	rpt_url := "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxstatreport?fun=new"
+// 	breq := BaseRequest{
+// 		conf.Wxuin,
+// 		conf.Wxsid,
+// 		"",
+// 		DeviceID(),
+// 	}
+// 	m := make(map[string]interface{})
+// 	m["BaseRequest"] = breq
+// 	m["Count"] = 1
+// 	m["List"] = []interface{}{ // todo
+// 		map[string]interface{}{
+// 			"Text": `{"type":"[app-runtime]","data":{"0":{"listenerCount":297,"watchersCount":430,"scopesCount":112},"15000":{"listenerCount":297,"watchersCount":430,"scopesCount":112},"600000":{"listenerCount":297,"watchersCount":433,"scopesCount":113},"unload":{"listenerCount":351,"watchersCount":688,"scopesCount":169}}}`,
+// 			"Type": 1,
+// 		},
+// 	}
+// 	breqdata, _ := json.Marshal(m)
+// 	req, _ := http.NewRequest("post", rpt_url, bytes.NewBuffer(breqdata))
+// 	resp, err := Cli.Do(req)
+// 	if err != nil {
+// 		return
+// 	}
+// 	if resp.StatusCode != 200 {
+// 		err = errors.New("Report2().resp.StatusCode =" + fmt.Sprint(resp.StatusCode))
+// 	}
+// 	return
+// }
+
 // after report2
-func Report3() {
-	rpt_url := "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxstatreport?fun=new"
-	breq := BaseRequest{
-		conf.Wxuin,
-		conf.Wxsid,
-		"",
-		DeviceID(),
-	}
-	t1 := time.Now().Add(-2*time.Second).UnixNano() / 1e6
-	t2 := time.Now().Add(-time.Second).UnixNano() / 1e6
-	t3 := time.Now().UnixNano() / 1e6
-	m := make(map[string]interface{})
-	m["BaseRequest"] = breq
-	m["Count"] = 1
-	m["List"] = []interface{}{
-		map[string]interface{}{
-			"Text": `{"type":"[app-timing]","data":{"appTiming":{"initStart":` + fmt.Sprint(t2) + `,"initEnd":` + fmt.Sprint(t3) + `,"initContactStart":` + fmt.Sprint(t3) + `},"pageTiming":{"navigationStart":` + fmt.Sprint(t1) + `,"unloadEventStart":0,"unloadEventEnd":0,"redirectStart":` + fmt.Sprint(t1) + `,"redirectEnd":` + fmt.Sprint(t1) + `,"fetchStart":` + fmt.Sprint(t1) + `,"domainLookupStart":` + fmt.Sprint(t1) + `,"domainLookupEnd":` + fmt.Sprint(t1) + `,"connectStart":` + fmt.Sprint(t1) + `,"connectEnd":` + fmt.Sprint(t1) + `,"secureConnectionStart":` + fmt.Sprint(t1) + `,"requestStart":` + fmt.Sprint(t1) + `,"responseStart":` + fmt.Sprint(t1) + `,"responseEnd":` + fmt.Sprint(t1) + `,"domLoading":` + fmt.Sprint(t1) + `,"domInteractive":` + fmt.Sprint(t2) + `,"domContentLoadedEventStart":` + fmt.Sprint(t2) + `,"domContentLoadedEventEnd":` + fmt.Sprint(t2) + `,"domComplete":` + fmt.Sprint(t2) + `,"loadEventStart":` + fmt.Sprint(t2) + `,"loadEventEnd":` + fmt.Sprint(t2) + `,"timeToNonBlankPaint":` + fmt.Sprint(t2) + `,"timeToDOMContentFlushed":` + fmt.Sprint(t2) + `}}}`,
-			"Type": 1,
-		},
-	}
-	breqdata, _ := json.Marshal(m)
-	req, _ := http.NewRequest("post", rpt_url, bytes.NewBuffer(breqdata))
-	resp, err := Cli.Do(req)
-	if err != nil {
-		return
-	}
-	if resp.StatusCode != 200 {
-		err = errors.New("Report3().resp.StatusCode =" + fmt.Sprint(resp.StatusCode))
-	}
-	return
-}
+// func Report3() {
+// 	rpt_url := "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxstatreport?fun=new"
+// 	breq := BaseRequest{
+// 		conf.Wxuin,
+// 		conf.Wxsid,
+// 		"",
+// 		DeviceID(),
+// 	}
+// 	t1 := time.Now().Add(-2*time.Second).UnixNano() / 1e6
+// 	t2 := time.Now().Add(-time.Second).UnixNano() / 1e6
+// 	t3 := time.Now().UnixNano() / 1e6
+// 	m := make(map[string]interface{})
+// 	m["BaseRequest"] = breq
+// 	m["Count"] = 1
+// 	m["List"] = []interface{}{
+// 		map[string]interface{}{
+// 			"Text": `{"type":"[app-timing]","data":{"appTiming":{"initStart":` + fmt.Sprint(t2) + `,"initEnd":` + fmt.Sprint(t3) + `,"initContactStart":` + fmt.Sprint(t3) + `},"pageTiming":{"navigationStart":` + fmt.Sprint(t1) + `,"unloadEventStart":0,"unloadEventEnd":0,"redirectStart":` + fmt.Sprint(t1) + `,"redirectEnd":` + fmt.Sprint(t1) + `,"fetchStart":` + fmt.Sprint(t1) + `,"domainLookupStart":` + fmt.Sprint(t1) + `,"domainLookupEnd":` + fmt.Sprint(t1) + `,"connectStart":` + fmt.Sprint(t1) + `,"connectEnd":` + fmt.Sprint(t1) + `,"secureConnectionStart":` + fmt.Sprint(t1) + `,"requestStart":` + fmt.Sprint(t1) + `,"responseStart":` + fmt.Sprint(t1) + `,"responseEnd":` + fmt.Sprint(t1) + `,"domLoading":` + fmt.Sprint(t1) + `,"domInteractive":` + fmt.Sprint(t2) + `,"domContentLoadedEventStart":` + fmt.Sprint(t2) + `,"domContentLoadedEventEnd":` + fmt.Sprint(t2) + `,"domComplete":` + fmt.Sprint(t2) + `,"loadEventStart":` + fmt.Sprint(t2) + `,"loadEventEnd":` + fmt.Sprint(t2) + `,"timeToNonBlankPaint":` + fmt.Sprint(t2) + `,"timeToDOMContentFlushed":` + fmt.Sprint(t2) + `}}}`,
+// 			"Type": 1,
+// 		},
+// 	}
+// 	breqdata, _ := json.Marshal(m)
+// 	req, _ := http.NewRequest("post", rpt_url, bytes.NewBuffer(breqdata))
+// 	resp, err := Cli.Do(req)
+// 	if err != nil {
+// 		return
+// 	}
+// 	if resp.StatusCode != 200 {
+// 		err = errors.New("Report3().resp.StatusCode =" + fmt.Sprint(resp.StatusCode))
+// 	}
+// 	return
+// }

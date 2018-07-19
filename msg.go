@@ -17,7 +17,7 @@ import (
 
 // 每发送一条消息，或接收到消息 get.syncCheck会立即返回 同时post.syncCheck获取消息
 
-func SendMsg(to, content string) (err error) {
+func SendMsg(to, content string) (cliMsgid, svrMsgid string, err error) {
 	xm := url.Values{}
 	xm.Add("pass_ticket", conf.PassTicket)
 	sendMsg_url := CgiUrl + "/webwxsendmsg?" + xm.Encode()
@@ -49,8 +49,10 @@ func SendMsg(to, content string) (err error) {
 		return
 	}
 	if rsp.BaseResponse.Ret != 0 {
-		return errors.New(rsp.BaseResponse.ErrMsg)
+		err = errors.New(rsp.BaseResponse.ErrMsg)
+		return
 	}
+	cliMsgid, svrMsgid = rsp.LocalID, rsp.MsgID
 	return
 }
 
@@ -112,6 +114,13 @@ type MsgRecv struct {
 }
 
 func HandleRecvMsg(syncResp *WebWxSyncResp) {
+	RecHandls = append([]func(*WebWxSyncResp){RecordMyMsg}, RecHandls...) // 优先记录自己的记录 [撤回用]
+	for _, f := range RecHandls {
+		f(syncResp)
+	}
+}
+
+func DisplayMsg(syncResp *WebWxSyncResp) {
 	for i := 0; i < len(syncResp.AddMsgList); i++ {
 		var from, content string
 		if strings.Contains(syncResp.AddMsgList[i].FromUserName, "@@") {
@@ -177,6 +186,27 @@ func HandleRecvMsg(syncResp *WebWxSyncResp) {
 			content = fmt.Sprintf("[收到MsgType:%d]", syncResp.AddMsgList[i].MsgType)
 			fmt.Printf("%s:\n	%s\n", from, content)
 		}
+		MrCount[syncResp.AddMsgList[i].FromUserName] += 1
+	}
+}
+
+func RecordMyMsg(syncResp *WebWxSyncResp) {
+	for i := 0; i < len(syncResp.AddMsgList); i++ {
+		if syncResp.AddMsgList[i].FromUserName != Me_userName {
+			continue
+		}
+		switch syncResp.AddMsgList[i].MsgType {
+		case MSG_TEXT, MSG_LINK, MSG_IMG, MSG_EMOTION, MSG_VOICE, MSG_VIDEO, MSG_SHORT_VIDEO:
+		default:
+			continue
+		}
+		svrMsgid := syncResp.AddMsgList[i].MsgId
+		Me_Said[svrMsgid] = MsgRecd{ // 我的 说话记录
+			SvrMsgid:   svrMsgid,
+			SendTime:   time.Unix(syncResp.AddMsgList[i].CreateTime, 0),
+			Tousername: syncResp.AddMsgList[i].FromUserName,
+			CliMsgid:   svrMsgid}
+		LastSendMsg = Me_Said[svrMsgid]
 	}
 }
 

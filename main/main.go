@@ -3,9 +3,10 @@ package main
 import (
 	"errors"
 	"fmt"
+	"time"
+
 	"test/wechat"
 	"test/wechat/combo"
-	"time"
 )
 
 func main() {
@@ -97,10 +98,16 @@ func main() {
 		fmt.Println("wechat.BatchGetContact().Done")
 	}
 	wechat.SetSyncCookies()
-
+	// 注意顺序
+	wechat.RecHandls = append(wechat.RecHandls, wechat.DisplayMsg) // 显示消息
 	go SyncRecv(chErr)
 	// after first send msg
 	go FirstSendReport(chErr)
+
+	msgCh := make(chan []string, 20)
+	go SvrSend(msgCh)
+
+	go combo.ExecIns(chErr, msgCh)
 
 	err = <-chErr
 	if err != nil {
@@ -125,7 +132,7 @@ func SyncRecv(chErr chan<- error) {
 			return
 		case 0:
 			switch selector {
-			case 2, 3:
+			case 2, 3: // 3的数据 profile
 				syncResp, err := wechat.PostWebWxSync()
 				if err != nil {
 					chErr <- err
@@ -162,6 +169,15 @@ func FirstSendReport(chErr chan<- error) {
 				chErr <- err
 			}
 			return
+		}
+	}
+}
+
+func SvrSend(msgCh <-chan []string) {
+	for ss := range msgCh {
+		err := combo.Say(ss[1], ss[0])
+		if err != nil {
+			fmt.Println(err)
 		}
 	}
 }

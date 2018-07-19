@@ -38,6 +38,97 @@ cookies
 {wxsid 8pkNeR36/yN5UAnU / wx2.qq.com 2018-07-12 20:28:03 +0000 UTC Thu, 12-Jul-2018 20:28:03 GMT 0 true false wxsid=8pkNeR36/yN5UAnU; Domain=wx2.qq.com; Path=/; Expires=Thu, 12-Jul-2018 20:28:03 GMT; Secure []}
 {webwx_data_ticket gSfwcH0z5DWTGoIHdUOMP5W+ / .qq.com 2018-07-12 20:28:03 +0000 UTC Thu, 12-Jul-2018 20:28:03 GMT 0 true false webwx_data_ticket=gSfwcH0z5DWTGoIHdUOMP5W+; Domain=.qq.com; Path=/; Expires=Thu, 12-Jul-2018 20:28:03 GMT; Secure []}
 
+// selector=3: // 3的数据 profile
+{
+	"BaseResponse": {
+		"Ret": 0,
+		"ErrMsg": ""
+	},
+	"AddMsgCount": 0,
+	"AddMsgList": [],
+	"ModContactCount": 0,
+	"ModContactList": [],
+	"DelContactCount": 0,
+	"DelContactList": [],
+	"ModChatRoomMemberCount": 0,
+	"ModChatRoomMemberList": [],
+	"Profile": {
+		"BitFlag": 190,
+		"UserName": {
+			"Buff": "@e17669a27305e109fa79b674465d9e6ec125e495d740f6ebf55f4c8a3693432e"
+		},
+		"NickName": {
+			"Buff": "威廉"
+		},
+		"BindUin": 516595344,
+		"BindEmail": {
+			"Buff": ""
+		},
+		"BindMobile": {
+			"Buff": "13397104869"
+		},
+		"Status": 104549,
+		"Sex": 1,
+		"PersonalCard": 0,
+		"Alias": "",
+		"HeadImgUpdateFlag": 0,
+		"HeadImgUrl": "",
+		"Signature": ""
+	},
+	"ContinueFlag": 0,
+	"SyncKey": {
+		"Count": 7,
+		"List": [{
+			"Key": 1,
+			"Val": 686958187
+		}, {
+			"Key": 2,
+			"Val": 686958188
+		}, {
+			"Key": 3,
+			"Val": 686958185
+		}, {
+			"Key": 11,
+			"Val": 686958115
+		}, {
+			"Key": 201,
+			"Val": 1531963844
+		}, {
+			"Key": 1000,
+			"Val": 1531955402
+		}, {
+			"Key": 1001,
+			"Val": 1531955474
+		}]
+	},
+	"SKey": "",
+	"SyncCheckKey": {
+		"Count": 7,
+		"List": [{
+			"Key": 1,
+			"Val": 686958187
+		}, {
+			"Key": 2,
+			"Val": 686958188
+		}, {
+			"Key": 3,
+			"Val": 686958185
+		}, {
+			"Key": 11,
+			"Val": 686958115
+		}, {
+			"Key": 201,
+			"Val": 1531963844
+		}, {
+			"Key": 1000,
+			"Val": 1531955402
+		}, {
+			"Key": 1001,
+			"Val": 1531955474
+		}]
+	}
+
+}
 
 关于report
 r2

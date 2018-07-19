@@ -26,7 +26,7 @@ func SayBase(to, content string) (err error) {
 		}
 		err = wechat.BatchGetContact(mbers, false)
 		if err != nil {
-			return
+			fmt.Printf("SayBase.BatchGetContact(room:%s)\n", to)
 		}
 	}
 	return SendMsg(to, content)
@@ -40,11 +40,20 @@ func SendMsg(to, content string) (err error) {
 		where = "对 "
 	}
 	where += wechat.NickName(to)
-	err = wechat.SendMsg(to, content)
+	var cliMsgid, svrMsgid string
+	cliMsgid, svrMsgid, err = wechat.SendMsg(to, content)
 	if err != nil {
 		fmt.Printf("我%s: [消息发送失败.%s]\n", where, err)
 	} else {
+		wechat.MsCount[to] += 1
 		fmt.Printf("我%s: %s\n", where, content)
+
+		wechat.Me_Said[svrMsgid] = wechat.MsgRecd{ // 我的 说话记录
+			SvrMsgid:   svrMsgid,
+			SendTime:   time.Now(),
+			Tousername: to,
+			CliMsgid:   cliMsgid}
+		wechat.LastSendMsg = wechat.Me_Said[svrMsgid]
 	}
 	return
 }
