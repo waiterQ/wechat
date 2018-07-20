@@ -12,6 +12,8 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+
+	lerrors "test/wechat/errors"
 )
 
 var (
@@ -90,7 +92,7 @@ func GetSyncCheck() (retCode, selector int, respStr string, err error) {
 	return
 }
 
-func PostWebWxSync() (syncResp *WebWxSyncResp, err error) {
+func PostWebWxSync() (syncResp *WebWxSyncResp, lerr lerrors.Lerror) {
 	xm := url.Values{}
 	xm.Set("sid", conf.Wxsid)
 	xm.Set("skey", conf.Skey)
@@ -112,6 +114,7 @@ func PostWebWxSync() (syncResp *WebWxSyncResp, err error) {
 
 	resp, err := Cli.Do(req)
 	if err != nil {
+		lerr = lerrors.Transform(err, lerrors.FATAL)
 		return
 	}
 	defer resp.Body.Close()
@@ -119,10 +122,11 @@ func PostWebWxSync() (syncResp *WebWxSyncResp, err error) {
 	e_syncResp := WebWxSyncResp{}
 	err = json.NewDecoder(resp.Body.(io.Reader)).Decode(&e_syncResp)
 	if err != nil {
+		lerr = lerrors.Transform(err, lerrors.FATAL)
 		return
 	}
 	if e_syncResp.BaseResponse.Ret != 0 {
-		err = errors.New(e_syncResp.BaseResponse.ErrMsg)
+		lerr = lerrors.New(e_syncResp.BaseResponse.ErrMsg)
 		return
 	}
 	sync_cookies = resp.Cookies()

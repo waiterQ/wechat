@@ -1,12 +1,12 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
 	"test/wechat"
 	"test/wechat/combo"
+	lerrors "test/wechat/errors"
 )
 
 func main() {
@@ -20,6 +20,7 @@ func main() {
 		fmt.Println("[wechat.GetImgQR(uuid)]", err)
 		return
 	}
+	fmt.Println("扫描二维码授权登录")
 	var redirect_url, code string
 	for {
 		time.Sleep(time.Second)
@@ -76,8 +77,6 @@ func main() {
 		return
 	}
 
-	chErr := make(chan error)
-
 	syncResp, err := wechat.PostWebWxSync()
 	if err != nil {
 		fmt.Println(err)
@@ -89,6 +88,7 @@ func main() {
 		fmt.Println("combo.GetLastChatrooms(syncResp)", err)
 		return
 	}
+	fmt.Println("combo.GetLastChatrooms(syncResp).Done")
 	if len(rooms) > 0 {
 		err = wechat.BatchGetContact(rooms, false) // 群里的可能不是直接好友
 		if err != nil {
@@ -98,45 +98,59 @@ func main() {
 		fmt.Println("wechat.BatchGetContact().Done")
 	}
 	wechat.SetSyncCookies()
-	// 注意顺序
+	fmt.Println("初始化完成")
+
+	// 注意顺序 [收到消息时的处理逻辑]
 	wechat.RecHandls = append(wechat.RecHandls, wechat.DisplayMsg) // 显示消息
-	go SyncRecv(chErr)
+
+	errCh := make(chan lerrors.Lerror) // 接收致命错误
+	exitCh := make(chan byte)          // 控制程序退出
+
+	go SyncRecv(errCh)
+	fmt.Println("接收消息启动完成")
 	// after first send msg
-	go FirstSendReport(chErr)
+	go FirstSendReport(errCh)
+	fmt.Println("微信同步报告启动完成")
 
 	msgCh := make(chan []string, 20)
-	go SvrSend(msgCh)
+	go SvrSend(msgCh, errCh)
+	fmt.Println("发送消息启动完成")
 
-	go combo.ExecIns(chErr, msgCh)
+	go combo.ExecIns(exitCh, errCh, msgCh)
+	fmt.Printf("键入指令启动完成\n\n")
 
-	err = <-chErr
-	if err != nil {
-		fmt.Println(err)
-	}
+	go errorListener(errCh, exitCh) // 大错误处理中心
+
+	<-exitCh
+	fmt.Println("手动退出")
 }
 
-func SyncRecv(chErr chan<- error) {
+func SyncRecv(errCh chan<- lerrors.Lerror) {
 	for {
 		retCode, selector, respStr, err := wechat.GetSyncCheck()
 		if err != nil {
-			chErr <- err
+			errCh <- lerrors.Transform(err, lerrors.FATAL)
 			return
 		}
 		// fmt.Println(retCode, selector, respStr, err)
 		switch retCode {
 		case 1100:
-			chErr <- errors.New("在微信上退出")
+			errCh <- lerrors.New("在微信上退出", lerrors.FATAL)
 			return
 		case 1101:
-			chErr <- errors.New("在其他设备上登录")
+			if !wechat.ManualQuit {
+				errCh <- lerrors.New("在其他设备上登录", lerrors.FATAL)
+			}
 			return
 		case 0:
 			switch selector {
 			case 2, 3: // 3的数据 profile
-				syncResp, err := wechat.PostWebWxSync()
-				if err != nil {
-					chErr <- err
-					return
+				syncResp, lerr := wechat.PostWebWxSync()
+				if lerr != nil {
+					errCh <- lerr
+					if lerr.Level() > lerrors.ERROR {
+						return
+					}
 				}
 				wechat.SetSyncCookies()
 				wechat.HandleRecvMsg(syncResp)
@@ -149,35 +163,54 @@ func SyncRecv(chErr chan<- error) {
 			case 0:
 			default:
 				fmt.Println(respStr)
-				chErr <- errors.New("未知selector:" + fmt.Sprint(selector))
-				return
+				errCh <- lerrors.New("未知selector:" + fmt.Sprint(selector))
 			}
 		default:
 			fmt.Println(respStr)
-			chErr <- errors.New("retCode:" + fmt.Sprint(retCode))
+			errCh <- lerrors.New("retCode:"+fmt.Sprint(retCode), lerrors.FATAL)
 			return
 		}
 	}
 }
 
-func FirstSendReport(chErr chan<- error) {
+func FirstSendReport(errCh chan<- lerrors.Lerror) {
 	for {
 		time.Sleep(10 * time.Minute)
 		if wechat.HaveFirstSendMsg {
 			err := wechat.ReportSendMsg()
 			if err != nil {
-				chErr <- err
+				errCh <- lerrors.Transform(err, lerrors.FATAL)
 			}
 			return
 		}
 	}
 }
 
-func SvrSend(msgCh <-chan []string) {
+func SvrSend(msgCh <-chan []string, errCh chan<- lerrors.Lerror) {
 	for ss := range msgCh {
 		err := combo.Say(ss[1], ss[0])
 		if err != nil {
-			fmt.Println(err)
+			errCh <- lerrors.Transform(err) // 虽然接不到错误 但是先放着
+		}
+	}
+}
+
+func errorListener(errCh <-chan lerrors.Lerror, exitCh chan<- byte) {
+	var count int // lerrors.ERROR次数 到2次或致命错误 就退出
+	for {
+		if count > 1 {
+			exitCh <- 0
+			return
+		}
+		for lerr := range errCh {
+			if lerr.Level() == lerrors.FATAL {
+				fmt.Printf("[FATAL] %s\n", lerr)
+				exitCh <- 0
+				return
+			} else if lerr.Level() == lerrors.ERROR {
+				fmt.Printf("[ERROR] %s\n", lerr)
+				count += 1
+			}
 		}
 	}
 }

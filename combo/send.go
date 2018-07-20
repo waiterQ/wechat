@@ -44,6 +44,7 @@ func SendMsg(to, content string) (err error) {
 	cliMsgid, svrMsgid, err = wechat.SendMsg(to, content)
 	if err != nil {
 		fmt.Printf("我%s: [消息发送失败.%s]\n", where, err)
+		err = nil // 发送失败的错误忽略
 	} else {
 		wechat.MsCount[to] += 1
 		fmt.Printf("我%s: %s\n", where, content)

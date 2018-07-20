@@ -3,6 +3,7 @@ package wechat
 import (
 	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"fmt"
 	"html"
@@ -131,6 +132,9 @@ func DisplayMsg(syncResp *WebWxSyncResp) {
 			from = NickName(syncResp.AddMsgList[i].FromUserName)
 			content = syncResp.AddMsgList[i].Content
 		}
+		if syncResp.AddMsgList[i].FromUserName == Me_userName {
+			from = fmt.Sprintf("我对 %s", NickName(syncResp.AddMsgList[i].ToUserName))
+		}
 		// to = NickName(syncResp.AddMsgList[i].ToUserName)
 		switch syncResp.AddMsgList[i].MsgType {
 		case MSG_TEXT:
@@ -147,19 +151,21 @@ func DisplayMsg(syncResp *WebWxSyncResp) {
 		case MSG_LINK:
 			content = strings.Replace(content, "<br/>", "\n", -1)
 			content = html.UnescapeString(content)
-			fmt.Printf("%s:\n	%s\n", from, content)
+			slink := &ShareLink{}
+			xml.Unmarshal([]byte(content), slink)
+			fmt.Printf("%s:\n	%s(%s)[%s]\n", from, slink.Appmsg.Title, slink.AppInfo.AppName, slink.Appmsg.Url)
 		case MSG_IMG:
 			content = fmt.Sprintf("%s/webwxgetmsgimg?&MsgID=%s&skey=%s&type=slave", CgiUrl, syncResp.AddMsgList[i].MsgId, WebInitConf.SKey)
 			fmt.Printf("%s:\n	[收到一个图片 %s]\n", from, content)
 			// 没有cookie无法访问
-		case MSG_EMOTION:
-			content = html.UnescapeString(content)
-			content = strings.Replace(content, " ", "", -1)
-			ss := strings.SplitN(content, `cdnurl="`, 2)
-			content = ss[1]
-			ss = strings.SplitN(content, `"`, 2)
-			content = ss[0]
-			fmt.Printf("%s:\n	[收到一个gif %s]\n", from, content)
+		case MSG_EMOTION: // 收到一个表情
+			// content = html.UnescapeString(content)
+			// content = strings.Replace(content, " ", "", -1)
+			// ss := strings.SplitN(content, `cdnurl="`, 2)
+			// content = ss[1]
+			// ss = strings.SplitN(content, `"`, 2)
+			// content = ss[0]
+			fmt.Printf("%s:\n	[收到一个gif]\n", from)
 		case MSG_VOICE:
 			content = "[收到一段语音]"
 			fmt.Printf("%s:\n	%s\n", from, content)
@@ -231,3 +237,14 @@ const (
 	MSG_SYS         = 10000 // system message
 	MSG_WITHDRAW    = 10002 // withdraw notification message
 )
+
+type ShareLink struct {
+	XMLName xml.Name `xml:"msg"`
+	Appmsg  struct {
+		Title string `xml:"title"`
+		Url   string `xml:"url"`
+	} `xml:"appmsg"`
+	AppInfo struct {
+		AppName string `xml:"appname"`
+	} `xml:"appinfo"`
+}

@@ -89,7 +89,7 @@ func GetImgQR(loginuuid string) (err error) {
 	if err != nil {
 		return
 	}
-	qtpath = "./" + loginuuid + ".jpg"
+	qtpath = TmpPath + "/" + loginuuid + ".jpg"
 	file, _ := os.OpenFile(qtpath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	defer file.Close()
 	file.Write(data)

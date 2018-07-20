@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 )
 
@@ -18,8 +19,8 @@ func Logout() (err error) {
 	if err != nil {
 		return
 	}
-	if resp.StatusCode != 301 {
-		err = errors.New("Logout().resp.StatusCode != 301")
+	if resp.StatusCode != 301 && resp.StatusCode != 200 { // webwx是301 我请求是200
+		err = errors.New("Logout().resp.StatusCode != 301, =" + fmt.Sprint(resp.StatusCode))
 	}
 	return
 }

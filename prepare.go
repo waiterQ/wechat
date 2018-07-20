@@ -45,7 +45,15 @@ func WebWxInit() (err error) {
 	}
 	WebInitConf = &c
 	for i := 0; i < len(c.ContactList); i++ {
-		M_member[c.ContactList[i].UserName] = Contact{c.ContactList[i], true}
+		if c.ContactList[i].ContactFlag == 0 {
+			M_member[c.ContactList[i].UserName] = Contact{c.ContactList[i], true}
+			if c.ContactList[i].UserName[:2] == "@@" {
+				FirstTop10Contacts += c.ContactList[i].UserName[:1] + ","
+			}
+		}
+	}
+	if len(FirstTop10Contacts) > 0 {
+		FirstTop10Contacts = FirstTop10Contacts[:len(FirstTop10Contacts)-1]
 	}
 	Me_userName = c.User.UserName
 	return
@@ -122,8 +130,9 @@ type Member struct {
 type ContactResp struct {
 	BaseResponse *BaseResp
 	MemberCount  int
-	Count        int // batchgetcontract type=ex
 	MemberList   []*Member
+	Count        int       // batchgetcontract type=ex
+	ContactList  []*Member // batchgetcontract type=ex
 	Seq          int
 }
 
@@ -188,7 +197,6 @@ func BatchGetContact(usersName []string, isFriend bool) (err error) {
 	}
 	r.Count = len(r.List)
 	bs, _ := json.Marshal(r)
-
 	req, _ := http.NewRequest("post", morecontact_url, bytes.NewReader(bs))
 	req.Header.Set("Content-Type", "application/json;charset=utf-8")
 	resp, err := Cli.Do(req)
@@ -206,10 +214,12 @@ func BatchGetContact(usersName []string, isFriend bool) (err error) {
 		return errors.New(contat.BaseResponse.ErrMsg)
 	}
 	if contat.Count > 0 {
-		for i := 0; i < len(contat.MemberList); i++ {
-			_, ok := M_member[contat.MemberList[i].UserName]
-			if !ok {
-				M_member[contat.MemberList[i].UserName] = Contact{*contat.MemberList[i], isFriend}
+		for i := 0; i < len(contat.ContactList); i++ {
+			for j := 0; j < len(contat.ContactList[i].MemberList); j++ {
+				_, ok := M_member[contat.ContactList[i].MemberList[j].UserName]
+				if !ok {
+					M_member[contat.ContactList[i].MemberList[j].UserName] = Contact{contat.ContactList[i].MemberList[j], isFriend}
+				}
 			}
 		}
 	}
@@ -222,5 +232,6 @@ type BatchContactReq struct {
 	List    []ContactOne
 }
 type ContactOne struct {
+	// EncryChatRoomId string
 	UserName string
 }

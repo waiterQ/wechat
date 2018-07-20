@@ -7,25 +7,27 @@ import (
 	"time"
 
 	"test/wechat"
+	lerrors "test/wechat/errors"
 	"test/wechat/utils"
 )
 
 // 键入命令处理
 
-func ExecIns(exitCh chan<- error, msgCh chan<- []string) (err error) {
+func ExecIns(exitCh chan<- byte, errCh chan<- lerrors.Lerror, msgCh chan<- []string) (err error) {
 	for {
 		cmd, values := InputPrepare()
 		if cmd == "" {
-			err = errors.New("缺少键入")
+			fmt.Println("缺少键入")
 			continue
 		}
 		switch cmd {
 		case "exit":
-			err = Logout()
-			if err != nil {
-				fmt.Println(err)
+			lerr := Logout()
+			if lerr != nil {
+				errCh <- lerr
+				return
 			}
-			exitCh <- errors.New("手动退出")
+			exitCh <- 0
 			return
 		case "send":
 			err = MsgProcess(values, msgCh)
@@ -58,9 +60,13 @@ func ExecIns(exitCh chan<- error, msgCh chan<- []string) (err error) {
 			}
 			fmt.Println(msg)
 		case "withdraw":
-			err := Withdraw(values)
-			if err != nil {
-				fmt.Println(err)
+			lerr := Withdraw(values)
+			if lerr != nil {
+				if lerr.Level() > lerrors.WARN {
+					errCh <- lerr
+				} else {
+					fmt.Println(lerr)
+				}
 				continue
 			}
 			fmt.Println("消息撤回成功")
@@ -205,32 +211,33 @@ func ChangeTo(obj string) (err error) {
 	return
 }
 
-func Withdraw(pars []string) (err error) {
+func Withdraw(pars []string) (lerr lerrors.Lerror) {
 	var cliMsgid, svrMsgid, toUserName string
 	if len(pars) == 0 {
 		if wechat.LastSendMsg.SendTime.Add(time.Minute * 2).Before(time.Now()) {
-			err = errors.New("[消息超过两分钟无法撤回]")
+			lerr = lerrors.New("[消息超过两分钟无法撤回]", lerrors.INFO)
 			return
 		}
 		cliMsgid, svrMsgid, toUserName = wechat.LastSendMsg.CliMsgid, wechat.LastSendMsg.SvrMsgid, wechat.LastSendMsg.Tousername
 	} else {
 		rcd, ok := wechat.Me_Said[pars[0]]
 		if !ok {
-			err = errors.New("未找到msgid")
+			lerr = lerrors.New("未找到msgid", lerrors.INFO)
 			return
 		}
 		if rcd.SendTime.Add(time.Minute * 2).Before(time.Now()) {
-			err = errors.New("[消息超过两分钟无法撤回]")
+			lerr = lerrors.New("[消息超过两分钟无法撤回]", lerrors.INFO)
 			return
 		}
 		cliMsgid, svrMsgid, toUserName = rcd.CliMsgid, rcd.SvrMsgid, rcd.Tousername
 	}
 	msg, err := wechat.Withdraw(cliMsgid, svrMsgid, toUserName)
 	if err != nil {
+		lerr = lerrors.Transform(err, lerrors.FATAL)
 		return
 	}
 	if msg != "" {
-		err = errors.New(msg)
+		lerr = lerrors.New(msg, lerrors.INFO)
 	}
 	return
 }

@@ -1,15 +1,21 @@
 package combo
 
 import (
-	"fmt"
 	"test/wechat"
+	lerrors "test/wechat/errors"
 )
 
 // exitCh
-func Logout() error {
+func Logout() lerrors.Lerror {
+	wechat.ManualQuit = true // 手动退出
 	err2 := wechat.ReportLogout()
-	if err2 != nil {
-		fmt.Println(err2)
+
+	err := wechat.Logout()
+	if err != nil {
+		return lerrors.Transform(err, lerrors.FATAL)
 	}
-	return wechat.Logout()
+	if err2 != nil {
+		return lerrors.Transform(err2)
+	}
+	return nil
 }

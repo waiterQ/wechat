@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -14,15 +16,18 @@ var Cli *http.Client
 var conf *XmlConfig
 var WebInitConf *InitResp
 var CgiUrl string
-var M_member map[string]Contact = make(map[string]Contact, 4096) // GetContact batchgetContact webwxinit.chatrooms
-var M_chatroomViewed map[string]int = make(map[string]int)       // chatroom第一次进入需要获取所有群成员
-var Me_userName string                                           // 自己的userName
-var Me_Said map[string]MsgRecd = make(map[string]MsgRecd, 1024)  // 自己说话记录
 var randSourse rand.Source
-var ( // report_logout用
+var ManualQuit bool // 手动退出
+
+var M_chatroomViewed map[string]int = make(map[string]int) // chatroom第一次进入需要获取所有群成员
+var (                                                      // report_logout用
 	MrCount map[string]int = make(map[string]int) // m[接收 人或群的username]接收消息数
 	MsCount map[string]int = make(map[string]int) // m[发送 人或群的username]发送消息数
 )
+
+var M_member map[string]Contact = make(map[string]Contact, 4096) // GetContact batchgetContact webwxinit.chatrooms
+var Me_userName string                                           // 自己的userName
+var Me_Said map[string]MsgRecd = make(map[string]MsgRecd, 1024)  // 自己说话记录
 var Curr_chatObj struct {
 	UserName string // 当前聊天对象
 	NickName string // 昵称
@@ -30,6 +35,9 @@ var Curr_chatObj struct {
 
 // 最近一次发送消息记录 (只能对人和群) local,server,tousername
 var LastSendMsg MsgRecd
+var FirstTop10Contacts string // [xx,xx,xx,xx]
+
+var TmpPath string = strings.Split(os.Getenv("GOPATH"), ";")[0] + "/src/test/wechat/tmp/"
 
 // 暂时先这样
 var RecHandls []func(*WebWxSyncResp)
@@ -75,15 +83,15 @@ type SyncKey struct {
 
 func NickName(userName string) (name string) {
 	if userName == Me_userName {
-		name += "我"
+		name = "我"
 		return
 	}
 	member, ok := M_member[userName]
 	if ok {
-		name += member.NickName
+		name = member.NickName
 		return
 	}
-	name += userName
+	name = userName
 	return
 }
 
