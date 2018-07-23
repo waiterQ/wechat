@@ -126,8 +126,12 @@ func DisplayMsg(syncResp *WebWxSyncResp) {
 		var from, content string
 		if strings.Contains(syncResp.AddMsgList[i].FromUserName, "@@") {
 			ss := strings.SplitN(syncResp.AddMsgList[i].Content, ":<br/>", 2)
-			from = fmt.Sprintf("chatroom[%s]的 %s", NickName(syncResp.AddMsgList[i].FromUserName), NickName(ss[0]))
-			content = ss[1]
+			if syncResp.AddMsgList[i].MsgType != MSG_WITHDRAW {
+				from = fmt.Sprintf("chatroom[%s]的 %s", NickName(syncResp.AddMsgList[i].FromUserName), NickName(ss[0]))
+				content = ss[1]
+			} else {
+				from = fmt.Sprintf("chatroom[%s]的 %s", NickName(syncResp.AddMsgList[i].FromUserName), "我")
+			}
 		} else {
 			from = NickName(syncResp.AddMsgList[i].FromUserName)
 			content = syncResp.AddMsgList[i].Content
@@ -146,7 +150,11 @@ func DisplayMsg(syncResp *WebWxSyncResp) {
 				fmt.Printf("%s:\n	%s\n", from, content)
 			}
 		case MSG_WITHDRAW:
-			content = "[撤回一条消息]"
+			if strings.Contains(content, "你撤回了一条消息") {
+				content = "[你撤回了一条消息]"
+			} else {
+				content = "[对方撤回了一条消息]"
+			}
 			fmt.Printf("%s:\n	%s\n", from, content)
 		case MSG_LINK:
 			content = strings.Replace(content, "<br/>", "\n", -1)

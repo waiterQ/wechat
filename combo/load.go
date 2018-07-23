@@ -21,6 +21,9 @@ func GetLastChatrooms(syncResp *wechat.WebWxSyncResp) (chatroomsName []string, e
 				allUsersName := strings.Split(syncResp.AddMsgList[i].StatusNotifyUserName, ",")
 				for j := 0; j < len(allUsersName); j++ {
 					if allUsersName[j][:2] == "@@" {
+						if strings.Contains(wechat.FirstTop10Contacts, allUsersName[j]) {
+							continue
+						}
 						chatroomsName = append(chatroomsName, allUsersName[j])
 					}
 				}
@@ -28,6 +31,8 @@ func GetLastChatrooms(syncResp *wechat.WebWxSyncResp) (chatroomsName []string, e
 			break
 		}
 	}
+	chats := strings.Split(wechat.FirstTop10Contacts, ",")
+	chatroomsName = append(chatroomsName, chats...)
 	if !have {
 		err = errors.New("没有最近联系人相关消息")
 		return

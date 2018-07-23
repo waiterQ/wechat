@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -44,13 +45,26 @@ func WebWxInit() (err error) {
 		return
 	}
 	WebInitConf = &c
+
 	for i := 0; i < len(c.ContactList); i++ {
 		if c.ContactList[i].ContactFlag == 0 {
 			M_member[c.ContactList[i].UserName] = Contact{c.ContactList[i], true}
 			if c.ContactList[i].UserName[:2] == "@@" {
-				FirstTop10Contacts += c.ContactList[i].UserName[:1] + ","
+				if !strings.Contains(c.ChatSet, c.ContactList[i].UserName) {
+					FirstTop10Contacts += c.ContactList[i].UserName + ","
+				}
 			}
 		}
+	}
+	chats := strings.Split(c.ChatSet, ",")
+	for i := 0; i < len(chats); i++ {
+		if len(chats[i]) < 3 {
+			continue
+		}
+		if chats[i][:2] != "@@" {
+			continue
+		}
+		FirstTop10Contacts += chats[i] + ","
 	}
 	if len(FirstTop10Contacts) > 0 {
 		FirstTop10Contacts = FirstTop10Contacts[:len(FirstTop10Contacts)-1]

@@ -2,11 +2,15 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"time"
+
+	"github.com/mdp/qrterminal"
 
 	"test/wechat"
 	"test/wechat/combo"
 	lerrors "test/wechat/errors"
+	"test/wechat/ins"
 )
 
 func main() {
@@ -15,11 +19,13 @@ func main() {
 		fmt.Println("[wechat.GetLoginUuid]", err)
 		return
 	}
-	err = wechat.GetImgQR(uuid)
-	if err != nil {
-		fmt.Println("[wechat.GetImgQR(uuid)]", err)
-		return
-	}
+
+	qrterminal.Generate("https://login.weixin.qq.com/l/"+uuid, qrterminal.L, os.Stdout)
+	// err = wechat.DownloadImgQR(uuid)
+	// if err != nil {
+	// 	fmt.Println("[wechat.GetImgQR(uuid)]", err)
+	// 	return
+	// }
 	fmt.Println("扫描二维码授权登录")
 	var redirect_url, code string
 	for {
@@ -116,13 +122,14 @@ func main() {
 	go SvrSend(msgCh, errCh)
 	fmt.Println("发送消息启动完成")
 
-	go combo.ExecIns(exitCh, errCh, msgCh)
+	go ins.Start(exitCh, errCh, msgCh)
 	fmt.Printf("键入指令启动完成\n\n")
 
 	go errorListener(errCh, exitCh) // 大错误处理中心
 
+	fmt.Println("启动完成：")
+
 	<-exitCh
-	fmt.Println("手动退出")
 }
 
 func SyncRecv(errCh chan<- lerrors.Lerror) {
@@ -140,6 +147,8 @@ func SyncRecv(errCh chan<- lerrors.Lerror) {
 		case 1101:
 			if !wechat.ManualQuit {
 				errCh <- lerrors.New("在其他设备上登录", lerrors.FATAL)
+			} else {
+				fmt.Println("手动退出")
 			}
 			return
 		case 0:
@@ -155,7 +164,7 @@ func SyncRecv(errCh chan<- lerrors.Lerror) {
 				wechat.SetSyncCookies()
 				wechat.HandleRecvMsg(syncResp)
 			case 4: // 通讯录更新
-				fmt.Println("通讯录更新了")
+				fmt.Println("[通讯录更新了]")
 			case 6:
 				fmt.Println("//========= 红包来了! ========//")
 			case 7:

@@ -70,7 +70,7 @@ func GetLoginUuid() (loginuuid string, err error) {
 	}
 }
 
-func GetImgQR(loginuuid string) (err error) {
+func DownloadImgQR(loginuuid string) (err error) {
 	params := url.Values{}
 	params.Set("t", "webwx")
 	params.Set("_", strconv.FormatInt(time.Now().Unix(), 10))
