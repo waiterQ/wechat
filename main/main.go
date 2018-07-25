@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
@@ -153,8 +154,17 @@ func SyncRecv(errCh chan<- lerrors.Lerror) {
 			return
 		case 0:
 			switch selector {
-			case 2, 3: // 3的数据 profile
+			case 2, 3, 4, 6: // 3的数据 profile
+				if selector == 4 {
+					fmt.Println("[通讯录更新了]")
+				} else if selector == 6 {
+					fmt.Println("//========= 红包来了! ========//")
+				}
 				syncResp, lerr := wechat.PostWebWxSync()
+				if selector == 4 || selector == 6 {
+					d, _ := json.Marshal(syncResp)
+					fmt.Println(string(d))
+				}
 				if lerr != nil {
 					errCh <- lerr
 					if lerr.Level() > lerrors.ERROR {
@@ -163,10 +173,10 @@ func SyncRecv(errCh chan<- lerrors.Lerror) {
 				}
 				wechat.SetSyncCookies()
 				wechat.HandleRecvMsg(syncResp)
-			case 4: // 通讯录更新
-				fmt.Println("[通讯录更新了]")
-			case 6:
-				fmt.Println("//========= 红包来了! ========//")
+			// case 4: // 通讯录更新
+			// 	fmt.Println("[通讯录更新了]")
+			// case 6:
+			// 	fmt.Println("//========= 红包来了! ========//")
 			case 7:
 				fmt.Println("在手机上操作了微信")
 			case 0:

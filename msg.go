@@ -128,7 +128,9 @@ func DisplayMsg(syncResp *WebWxSyncResp) {
 			ss := strings.SplitN(syncResp.AddMsgList[i].Content, ":<br/>", 2)
 			if syncResp.AddMsgList[i].MsgType != MSG_WITHDRAW {
 				from = fmt.Sprintf("chatroom[%s]的 %s", NickName(syncResp.AddMsgList[i].FromUserName), NickName(ss[0]))
-				content = ss[1]
+				if len(ss) > 1 {
+					content = ss[1]
+				}
 			} else {
 				from = fmt.Sprintf("chatroom[%s]的 %s", NickName(syncResp.AddMsgList[i].FromUserName), "我")
 			}
