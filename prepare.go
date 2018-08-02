@@ -229,6 +229,10 @@ func BatchGetContact(usersName []string, isFriend bool) (err error) {
 	}
 	if contat.Count > 0 {
 		for i := 0; i < len(contat.ContactList); i++ {
+			_, ok := M_member[contat.ContactList[i].UserName]
+			if !ok {
+				M_member[contat.ContactList[i].UserName] = Contact{*contat.ContactList[i], true} // 主动查询的是朋友
+			}
 			for j := 0; j < len(contat.ContactList[i].MemberList); j++ {
 				_, ok := M_member[contat.ContactList[i].MemberList[j].UserName]
 				if !ok {

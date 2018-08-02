@@ -226,6 +226,19 @@ func RecordMyMsg(syncResp *WebWxSyncResp) {
 	}
 }
 
+// func GetUnknowRoom(syncResp *WebWxSyncResp) {
+// 	var unknowList []string
+// 	for i := 0; i < len(syncResp.AddMsgList); i++ {
+// 		if strings.Contains(syncResp.AddMsgList[i].FromUserName, "@@") &&
+// 			NickName(syncResp.AddMsgList[i].FromUserName) == syncResp.AddMsgList[i].FromUserName {
+// 			unknowList = append(unknowList, syncResp.AddMsgList[i].FromUserName)
+// 		}
+// 	}
+// 	if len(unknowList) > 0 {
+
+// 	}
+// }
+
 const (
 	// msg types
 	MSG_TEXT        = 1     // text message
